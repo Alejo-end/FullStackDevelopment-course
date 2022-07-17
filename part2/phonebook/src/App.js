@@ -72,7 +72,7 @@ const App = () => {
         }, 5000)
       })
       .catch(error => { 
-        setText(`Adding cannot be added to the phonebook.`)
+        setText(`User cannot be added to the phonebook.`)
         setColor('red')
         setTimeout(() => {
           setText(null)
