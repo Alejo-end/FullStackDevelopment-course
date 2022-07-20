@@ -1,25 +1,52 @@
+const _ = require("lodash")
+
 const dummy = () => {
     return 1
 }
 
 const totalLikes = (blogs) => {
-    const reducer = (sum, item) => {
-        return sum + item.likes
+    let sum = blogs.reduce(((total, blog) => { return total + blog.likes }), 0)
+    return sum
+}
+
+const favoriteBlog = (blogs) => {
+    if (blogs.length === 0) return null
+
+    let favorite = blogs.reduce((max, blog) => max.likes > blog.likes ? max : blog)
+    return favorite
+}
+
+const mostBlogs = (blogs) => {
+    if (blogs.length === 0) return null
+    const arrayOfAuthors = blogs.map((blog) => { return blog.author })
+    var result = _.flow(
+        _.countBy,
+        _.entries, 
+        _.partialRight(_.maxBy, _.last),
+
+    )(arrayOfAuthors)
+    return {
+        "author": result[0],
+        blogs: result[1]
     }
-
-    return blogs.length === 0 ? 0 : blogs.reduce(reducer, 0)
 }
 
-const favouriteBlog = (blogs) => {
-    let fav = blogs.reduce((sum, item) => {
-        return sum.likes > item.likes ? sum : item
-    })
+const mostLikes = (blogs) => {
+    if (blogs.length === 0) return null
+    const arrayOfAuthors = blogs.map((blog) => { return { "author": blog.author, "likes": blog.likes } })
 
-    return [fav.title, fav.author, fav.likes]
+    const sum =
+        _(arrayOfAuthors)
+            .groupBy("author")
+            .map((objs, key) => ({
+                "author": key,
+                "likes": _.sumBy(objs, "likes")
+            }))
+            .value()
+
+    const result = _.maxBy(sum, "likes")
+
+    return result
 }
 
-module.exports = {
-    dummy,
-    totalLikes,
-    favouriteBlog
-}
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes }
