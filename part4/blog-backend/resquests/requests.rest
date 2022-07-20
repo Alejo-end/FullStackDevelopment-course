@@ -1,0 +1,13 @@
+GET http://localhost:3003/api/blogs/
+
+###
+
+POST http://localhost:3003/api/blogs/ HTTP/3.1 content-type: application/json
+
+{
+"title": "John Doe's Blog Post", "author": "John Doe", "url": "john-doe-blog-post", "likes": 0, "user": "5e7f8f8f8f8f8f8f8f8f8f8"
+}
+
+###
+
+GET http://localhost:3003/api/blogs/1
