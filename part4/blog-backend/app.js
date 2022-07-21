@@ -6,6 +6,7 @@ const config = require("./utils/config")
 const blogsRouter = require('./controllers/blogs')
 const logger = require("./utils/logger")
 const middleware = require("./utils/middleware")
+require('express-async-errors')
 
 logger.info('Connecting to:', config.MONGOURL)
 mongoose.connect(config.MONGOURL)

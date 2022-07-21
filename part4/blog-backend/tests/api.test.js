@@ -77,6 +77,14 @@ describe('POST method', () => {
         expect(urls).toContain("https://reactpatterns.com/")
         expect(likes).toContain(0)
     })
+
+    test("check that a bad post generates a bad request 400", async () => {
+        const badBlog = {
+            "author": "Alejandro",
+            "likes": 2
+        }
+        await api.post("/api/blogs").send(badBlog).expect(400)
+    })
 })
 
 afterAll(() => {
