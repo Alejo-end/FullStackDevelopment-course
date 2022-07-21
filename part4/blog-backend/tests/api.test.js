@@ -13,6 +13,12 @@ const oneBlog = {
     likes: 7,
 }
 
+const oneBlogNoLikes = {
+    title: "React patterns 2",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+}
+
 beforeEach(async () => { //similar to the tutorial of part 4 "Testing the backend"
     await Blog.deleteMany({})
     const testBlogs = blogs.map(blog => new Blog(blog)) 
@@ -54,6 +60,22 @@ describe('POST method', () => {
         expect(authors).toContain("Michael Chan")
         expect(urls).toContain("https://reactpatterns.com/")
         expect(likes).toContain(7)
+    })
+    test('Check if blog with no likes gets 0 by default', async () => { 
+
+        await api.post('/api/blogs').send(oneBlogNoLikes).expect(201).expect('Content-Type', /application\/json/) 
+        const reply = await api.get('/api/blogs')
+        expect(reply.body).toHaveLength(blogs.length + 1) 
+
+        const titles = reply.body.map(blog => blog.title) 
+        const authors = reply.body.map(blog => blog.author)
+        const urls = reply.body.map(blog => blog.url)
+        const likes = reply.body.map(blog => blog.likes)
+
+        expect(titles).toContain("React patterns 2")
+        expect(authors).toContain("Michael Chan")
+        expect(urls).toContain("https://reactpatterns.com/")
+        expect(likes).toContain(0)
     })
 })
 
