@@ -13,10 +13,22 @@ const oneBlog = {
     likes: 7,
 }
 
+const putBlog = {
+    title: "React patterns 3",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 16,
+}
+
 const oneBlogNoLikes = {
     title: "React patterns 2",
     author: "Michael Chan",
     url: "https://reactpatterns.com/",
+}
+
+const badBlog = {
+    "author": "Alejandro",
+    "likes": 2
 }
 
 beforeEach(async () => { //similar to the tutorial of part 4 "Testing the backend"
@@ -78,14 +90,40 @@ describe('POST method', () => {
         expect(likes).toContain(0)
     })
 
-    test("check that a bad post generates a bad request 400", async () => {
-        const badBlog = {
-            "author": "Alejandro",
-            "likes": 2
-        }
-        await api.post("/api/blogs").send(badBlog).expect(400)
+    test("check that a bad post generates a bad request 400", () => {
+        api.post("/api/blogs").send(badBlog).expect(400)
     })
 })
+
+describe('PUT blog', () => {
+    test('Updated blog likes successfully', async () => { //as seen in tutorial
+        const reply = await api.get('/api/blogs')
+        const id = reply.body[0].id
+
+        await api.put(`/api/blogs/${id}`).send(putBlog)
+        const reply2 = await api.get('/api/blogs')
+
+        const titles = reply2.body.map(blog => blog.title) //checks the content with updated likes
+        const authors = reply2.body.map(blog => blog.author)
+        const urls = reply2.body.map(blog => blog.url)
+        const likesAll = reply2.body.map(blog => blog.likes)
+        expect(titles).toContain('React patterns 3')
+        expect(authors).toContain('Michael Chan')
+        expect(urls).toContain('https://reactpatterns.com/')
+        expect(likesAll).toContain(16)
+    })
+})
+
+describe('DELETE method', () => {
+    test('Blog deleted', async () => { 
+        const reply = await api.get('/api/blogs')
+        const id = reply.body[0].id
+        await api.delete(`/api/blogs/${id}`).expect(204)
+        const reply2 = await api.get('/api/blogs')
+        expect(reply2.body).toHaveLength(blogs.length - 1) 
+    })
+})
+
 
 afterAll(() => {
     mongoose.connection.close()
