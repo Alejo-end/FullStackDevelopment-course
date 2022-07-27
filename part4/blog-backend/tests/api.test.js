@@ -3,6 +3,7 @@ const supertest = require("supertest")
 const app = require("../app")
 const blogs = require("./blog.test")
 const Blog = require("../models/blog")
+const Person = require("../models/person")
 
 const api = supertest(app)
 
@@ -33,6 +34,7 @@ const badBlog = {
 
 beforeEach(async () => { //similar to the tutorial of part 4 "Testing the backend"
     await Blog.deleteMany({})
+    await Person.deleteMany({})
     const testBlogs = blogs.map(blog => new Blog(blog)) 
     const savedBlogs = testBlogs.map(blog => blog.save()) 
     await Promise.all(savedBlogs) 

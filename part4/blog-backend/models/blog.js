@@ -1,10 +1,14 @@
 const mongoose = require('mongoose')
 
-const blogSchema = mongoose.Schema({
+const blogSchema = new mongoose.Schema({
     title: { type: String, required: true },
     author: String,
     url:  { type: String, required: true },
-    likes: Number
+    likes: Number,
+    person: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Person'
+    }
 })
 
 blogSchema.set('toJSON', {
