@@ -1,17 +1,8 @@
 describe('Blog app', function () {
-  beforeEach(function () {
-    cy.request('POST', 'http://localhost:3002/api/testing/reset')
-    const user = {
-      name: 'John Doe',
-      username: 'john-doe3',
-      passwordHash: 'password123'
-    }
-    cy.request('POST', 'http://localhost:3002/api/persons/', user)
-    cy.visit('http://localhost:3000')
-  })
+
 
   it('Login form is shown', function () {
-    cy.contains('Log in to application')
+    cy.contains('Login to App')
   })
   describe('Login', function () {
     it('Successful login', function () {
