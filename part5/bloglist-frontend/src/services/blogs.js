@@ -1,25 +1,22 @@
-import axios from "axios"
-const URL = "/api/blogs"
+import axios from "axios";
 
-const getAllBlogs = () => {
-  const request = axios.get(URL)
-  return request.then(response => response.data)
+const baseUrl = 'http://localhost:3002/api/blogs' 
+
+let token = null
+const setToken = newToken => {  token = `bearer ${newToken}`}
+
+const getAllBlogs = async () => {
+  const request = await axios.get(baseUrl)
+  return request.data
 }
 
-const createBlog = newObject => {
-  const request = axios.post(URL, newObject)
-  return request.then(response => response.data)
+const createBlog = async newObject => {
+  const config = {    
+    headers: { Authorization: token },  
+  }
+  const response = await axios.post(baseUrl,newObject, config)
+  return response.data
 }
 
-const deleteBlog = id => {
-  const request = axios.delete(`${URL}/${id}`)
-  return request.then(response => response.data)
-}
-
-const updateBlog = (id, newObject) => {
-  const request = axios.put(`${URL}/${id}`, newObject)
-  return request.then(response => response.data)
-}
-
-// eslint-disable-next-line
-export default { createBlog, getAllBlogs, deleteBlog, updateBlog }
+const defaultExport = { getAllBlogs,  createBlog, setToken }
+export default defaultExport

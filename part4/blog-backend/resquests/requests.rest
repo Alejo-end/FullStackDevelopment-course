@@ -6,7 +6,7 @@ POST http://localhost:3002/api/blogs/ HTTP/3.1
 Content-Type: application/json
 
 {
-"title": "John Doe's Blog Post", "author": "John Doe", "url": "john-doe-blog-post", "likes": 0, "person": "62d561f18af8d04a02f4cfa1"
+"title": "John Doe's Blog Post", "author": "John Doe", "url": "john-doe-blog-post", "likes": 0, "person": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4tZG9lMiIsImlkIjoiNjJlMjdjZmZkZmE4MDY4NTY3ODk3MWRhIiwiaWF0IjoxNjU5MDEwMzM5fQ.Vfw8NDVeDMmmS1hmqJm01IT9DPh5I4vLUltGjrnKt5Y"
 }
 
 ###
@@ -27,6 +27,6 @@ POST http://localhost:3002/api/auth HTTP/3.1
 Content-Type: application/json
 
 {
-    "username": "john-doe", "password": "password123"
+    "username": "john-doe2", "password": "password123"
 
 }
