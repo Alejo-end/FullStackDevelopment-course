@@ -1,30 +1,33 @@
-import { useState, useEffect } from 'react'
-import blogService from "./services/blogs.js"
-import authService from "./services/auth.js"
-import AuthForm from './components/AuthForm.jsx'
-import Blog from './components/Blog.jsx'
-import CreateBlogForm from './components/CreateBlogForm.jsx'
-import Alert from './components/Alert.jsx'
+import { useState, useEffect, useRef } from 'react'
+import blogService from "./services/blogs"
+import authService from "./services/auth"
+import CreateBlogForm from './components/CreateBlogForm'
+import AuthForm from './components/AuthForm'
+import Blog from './components/Blog'
+import Alert from './components/Alert'
+import Toggle from './components/Toggle'
 
 
 function App() {
   const [blogs, setBlogs] = useState([])
   const [username, setNewUsername] = useState('')
   const [password, setNewPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState('')
   const [message, setMessage] = useState('')
   const [color, setColor] = useState('')
 
+
+  const blogFormRef = useRef()
+
   useEffect(() => {
-    blogService.getAllBlogs().then(data => {
-      setBlogs(data)
-    })
+    const getAllBlogs = async () => {
+      const allBlogs = await blogService.getAllBlogs()
+      setBlogs(allBlogs.sort((a,b) => b.likes - a.likes))
+    }
+    getAllBlogs()
   }, [])
 
-  useEffect(() => { //as given in the tutorial in part 5
+  useEffect(() => { 
     const loggedUserJSON = window.localStorage.getItem('blogUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -41,18 +44,6 @@ function App() {
     setNewPassword(event.target.value)
   }
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
-
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
-
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -63,6 +54,7 @@ function App() {
       setMessage(`Successfully logged in`)
       setColor('green')
       setTimeout(() => {
+        setColor('red')
         setMessage(null)
       }, 3000)
     }
@@ -70,6 +62,7 @@ function App() {
       setMessage(`Wrong username or password`)
       setColor('red')
       setTimeout(() => {
+        setColor('red')
         setMessage(null)
       }, 3000)
     }
@@ -79,37 +72,77 @@ function App() {
 
   const handleLogout = () => {
     window.localStorage.clear()
-    setUser('')
+    setUser(null)
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-    const blog = {
-      title: title,
-      author: author,
-      url: url,
-    }
+  const addBlog = async (createdBlog) => {
+    blogFormRef.current.toggleVisibility()
     try {
-      const newBlog = await blogService.createBlog(blog)
-      setBlogs(blogs.concat(newBlog))
-      setMessage(`Successfully added new blog`)
+      const newBlog = await blogService.createBlog(createdBlog)
+      const concBlogs = (blogs.concat(newBlog))
+      setBlogs(concBlogs.sort((a,b) => b.likes - a.likes))
       setColor('green')
-      setTimeout(() => {
-        setMessage(null)
-      }, 3000)
+      setMessage(`Successfully added new blog`)
+            setTimeout(() => {
+              setColor('green')
+              setMessage(null)
+            }, 3000)
     }
     catch {
-      setMessage(`Failed to add blog, please try again`)
       setColor('red')
-      setTimeout(() => {
-        setMessage(null)
-      }, 3000)
+      setMessage(`Failed to add blog, please try again`)
+            setTimeout(() => {
+              setColor('red')
+              setMessage(null)
+            }, 3000)
     }
-    setTitle('')
-    setAuthor('')
-    setUrl('')
   }
 
+  const updateBlog = async (createdBlog) => { //updates likes
+    try {
+      const newBlog = await blogService.update(createdBlog.id, createdBlog)
+      const mapBlogs = blogs.map(blog => blog.id === createdBlog.id ? newBlog : blog)
+      setBlogs(mapBlogs.sort((a,b) => b.likes - a.likes))
+      setColor('green')
+      setMessage(`Successfully liked`)
+            setTimeout(() => {
+              setColor('green')
+              setMessage(null)
+            }, 3000)
+    }
+    catch {
+      setColor('red')
+      setMessage(`Failed to like, please try again`)
+            setTimeout(() => {
+              setColor('red')
+              setMessage(null)
+            }, 3000)
+    }
+  }
+
+  const deleteBlog = async (id) => { //updates likes
+    try {
+      if(window.confirm(`Are you sure you want to delete this blog?`)) {
+        await blogService.deleteBlog(id)
+        const mapBlogs = blogs.filter(blog => blog.id !== id)
+        setBlogs(mapBlogs.sort((a,b) => b.likes - a.likes))
+        setColor('green')
+        setMessage(`Successfully deleted`)
+              setTimeout(() => {
+                setColor('green')
+                setMessage(null)
+              }, 3000)
+      }
+    }
+    catch {
+      setColor('red')
+      setMessage(`Failed to delete, please try again`)
+            setTimeout(() => {
+              setColor('red')
+              setMessage(null)
+            }, 3000)
+    }
+  }
 
   return (
     <>
@@ -125,8 +158,10 @@ function App() {
           <Alert text={message} color={color}  />
           <p> {user.name} logged in <button onClick={handleLogout}>logout</button> </p>
           <h2>Create new blog</h2>
-          <CreateBlogForm submitFunc={addBlog} inputTitleValue={title} inputTitleChangeFunc={handleTitleChange} inputAuthorValue={author} inputAuthorChangeFunc={handleAuthorChange} inputUrlValue={url} inputUrlChangeFunc={handleUrlChange} />
-          {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+          <Toggle buttonLabel="Create Blog" ref={blogFormRef}>
+          <CreateBlogForm addBlog={addBlog} />
+          </Toggle>
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} updateBlog={updateBlog} person={user} delFunc={deleteBlog} />)}
         </>
       }
     </>
