@@ -4,8 +4,23 @@ const app = require("../app")
 const blogs = require("./blog.test")
 const Blog = require("../models/blog")
 const Person = require("../models/person")
+const helper = require('./test_helper')
 
 const api = supertest(app)
+const getToken = async () => {
+    const login = (await helper.initialUsers)[0]
+
+    await api
+        .post('/api/person')
+        .send(login)
+        .expect(201)
+
+    const response = await api
+        .get('/api/auth')
+        .send(login)
+    
+    return response.body.token
+}
 
 const oneBlog = {
     title: "React patterns 2",
@@ -35,6 +50,7 @@ const badBlog = {
 beforeEach(async () => { //similar to the tutorial of part 4 "Testing the backend"
     await Blog.deleteMany({})
     await Person.deleteMany({})
+    await Blog.insertMany(helper.initialBlogs)
     const testBlogs = blogs.map(blog => new Blog(blog)) 
     const savedBlogs = testBlogs.map(blog => blog.save()) 
     await Promise.all(savedBlogs) 
@@ -60,8 +76,8 @@ describe('GET method', () => {
 
 describe('POST method', () => {
     test('Check if blog can be added', async () => { 
-
-        await api.post('/api/blogs').send(oneBlog).expect(201).expect('Content-Type', /application\/json/) 
+        const token = await getToken()
+        await api.post('/api/blogs').set("Authorization", `Bearer ${token}`).send(oneBlog).expect(201).expect('Content-Type', /application\/json/) 
         const reply = await api.get('/api/blogs')
         expect(reply.body).toHaveLength(blogs.length + 1) 
 
@@ -76,8 +92,8 @@ describe('POST method', () => {
         expect(likes).toContain(7)
     })
     test('Check if blog with no likes gets 0 by default', async () => { 
-
-        await api.post('/api/blogs').send(oneBlogNoLikes).expect(201).expect('Content-Type', /application\/json/) 
+        const token = await getToken()
+        await api.post('/api/blogs').set("Authorization", `Bearer ${token}`).send(oneBlogNoLikes).expect(201).expect('Content-Type', /application\/json/) 
         const reply = await api.get('/api/blogs')
         expect(reply.body).toHaveLength(blogs.length + 1) 
 
@@ -93,7 +109,8 @@ describe('POST method', () => {
     })
 
     test("check that a bad post generates a bad request 400", () => {
-        api.post("/api/blogs").send(badBlog).expect(400)
+        const token = getToken()
+        api.post("/api/blogs").set("Authorization", `Bearer ${token}`).send(badBlog).expect(400)
     })
 })
 
@@ -101,8 +118,8 @@ describe('PUT blog', () => {
     test('Updated blog likes successfully', async () => { //as seen in tutorial
         const reply = await api.get('/api/blogs')
         const id = reply.body[0].id
-
-        await api.put(`/api/blogs/${id}`).send(putBlog)
+        const token = await getToken()
+        await api.put(`/api/blogs/${id}`).set("Authorization", `Bearer ${token}`).send(putBlog)
         const reply2 = await api.get('/api/blogs')
 
         const titles = reply2.body.map(blog => blog.title) //checks the content with updated likes
@@ -126,6 +143,20 @@ describe('DELETE method', () => {
     })
 })
 
+test("unauthorized access to blog POST method without token", async () => {
+
+    const newBlog = {
+        "author": "alejo",
+        "title": "bad blog",
+        "url": "badblog"
+    }
+
+    await api
+        .post("/api/blogs")
+        .set("Authorization", "Bearer ")
+        .send(newBlog)
+        .expect(401)
+})
 
 afterAll(() => {
     mongoose.connection.close()

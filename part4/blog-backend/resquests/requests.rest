@@ -6,12 +6,8 @@ POST http://localhost:3002/api/blogs/ HTTP/3.1
 Content-Type: application/json
 
 {
-"title": "John Doe's Blog Post", "author": "John Doe", "url": "john-doe-blog-post", "likes": 0, "user": "5e7f8f8f8f8f8f8f8f8f8f8"
+"title": "John Doe's Blog Post", "author": "John Doe", "url": "john-doe-blog-post", "likes": 0, "person": "62d561f18af8d04a02f4cfa1"
 }
-
-###
-
-GET http://localhost:3002/api/blogs/1
 
 ###
 
@@ -22,7 +18,7 @@ POST http://localhost:3002/api/persons/ HTTP/3.1
 Content-Type: application/json
 
 {
-"username": "john-doe", "name": "John Doe", "password": "password123"
+"username": "john-doe2", "name": "John Doe", "password": "password123"
 }
 
 ###
