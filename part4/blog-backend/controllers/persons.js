@@ -9,23 +9,23 @@ personsRouter.get("/", async (request, response) => {
 })
 
 personsRouter.post("/", async (request, response) => {
-    const { username, name, password } = request.body
+    const { username, name, passwordHash } = request.body
 
-    if(password.length < 3) { //checked in the controller as instructed seen password and hash sizes are not the same
+    if(passwordHash.length < 3) { 
         return response.status(400).json({ error: 'password must be at least 3 characters long'})  
     }
-    const thisPerson = await Person.findOne({ username })  //given in the tutorial seen the mongoose-unique-validator does not work with mongoose version 6.x
+    const thisPerson = await Person.findOne({ username })  
     if (thisPerson) {
         return response.status(400).json({ error: 'username must be unique' })
     }
     
     const saltRounds = 10
-    const passwordHash = await bcrypt.hash(password, saltRounds)
+    const hash = await bcrypt.hash(passwordHash, saltRounds)
 
     const person = new Person({
-        username,
-        name,
-        passwordHash
+        username: username,
+        name: name,
+        passwordHash: hash
     })
     const savedPerson = await person.save()
 

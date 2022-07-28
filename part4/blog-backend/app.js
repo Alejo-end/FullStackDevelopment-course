@@ -1,3 +1,4 @@
+
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -18,7 +19,7 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 
-app.use('/api/blogs', blogsRouter, middleware.personExtractor)
+app.use('/api/blogs', blogsRouter)
 app.use('/api/persons', personsRouter)
 app.use('/api/auth', authRouter)
 

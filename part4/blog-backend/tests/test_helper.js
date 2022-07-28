@@ -16,7 +16,6 @@ const initialBlogs = [
         "likes": 0
     
     }
-    
 ]
 
 const initialUsers = [
@@ -33,8 +32,8 @@ const blogsInDb = async () => {
 }
 
 const usersInDb = async () => {
-    const users = await Person.find({})
-    return users.map(user => user.toJSON())
+    const persons = await Person.find({})
+    return persons.map(person => person.toJSON())
 }
 
 
