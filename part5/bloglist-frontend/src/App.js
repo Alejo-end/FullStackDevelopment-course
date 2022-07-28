@@ -56,7 +56,7 @@ function App() {
         setMessage(null)
       }, 3000)
     }
-    catch {
+    catch(error) {
       setMessage('Wrong username or password')
       setColor('red')
       setTimeout(() => {
@@ -84,7 +84,7 @@ function App() {
         setMessage(null)
       }, 3000)
     }
-    catch {
+    catch(error) {
       setColor('red')
       setMessage('Failed to add blog, please try again')
       setTimeout(() => {
@@ -104,7 +104,7 @@ function App() {
         setMessage(null)
       }, 3000)
     }
-    catch {
+    catch(error) {
       setColor('red')
       setMessage('Failed to like, please try again')
       setTimeout(() => {
@@ -126,7 +126,7 @@ function App() {
         }, 3000)
       }
     }
-    catch {
+    catch(error) {
       setColor('red')
       setMessage('Failed to delete, please try again')
       setTimeout(() => {

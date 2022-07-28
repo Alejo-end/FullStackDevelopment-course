@@ -1,6 +1,7 @@
 const Blog = require('../models/blog')
 const middleware = require('../utils/middleware')
 const blogsRouter = require('express').Router()
+// eslint-disable-next-line no-unused-vars
 const jwt = require('jsonwebtoken')
 require('express-async-errors')
 

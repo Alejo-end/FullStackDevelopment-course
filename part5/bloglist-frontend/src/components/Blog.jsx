@@ -44,17 +44,17 @@ const Blog = ({ blog, updateBlog, person, delFunc }) => {
   }
   return (
     <div>
-      <div style={hidden}>
-        {blog.title} {blog.author} <button onClick={toggleVisibility}>View details</button>
+      <div style={hidden} className="blogHidden">
+        {blog.title} {blog.author} <button onClick={toggleVisibility} className='viewDetailsBut'>View details</button>
       </div>
-      <div style={shown}>
-        {blog.title} {blog.author} <button onClick={toggleVisibility}>Hide details</button>
+      <div style={shown} className='blogWhenShown'>
+        {blog.title} {blog.author} <button onClick={toggleVisibility} id='viewDetailsBut'>Hide details</button>
         <br></br>
         {blog.url}
         <br></br>
                 likes {blog.likes} <button onClick={upvoteBlog}>Like</button>
         <br></br>
-        <button style={showDelete} onClick={() => delFunc(blog.id)} >Delete</button>
+        <button style={showDelete} id='deleteBlog' onClick={() => delFunc(blog.id)} className="likeBut">Delete</button>
       </div>
     </div>
   )
@@ -63,7 +63,7 @@ const Blog = ({ blog, updateBlog, person, delFunc }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   updateBlog: PropTypes.func.isRequired,
-  username: PropTypes.object.isRequired,
+  person: PropTypes.object.isRequired,
   delFunc: PropTypes.func.isRequired
 }
 

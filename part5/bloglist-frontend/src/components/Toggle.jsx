@@ -19,7 +19,7 @@ const Toggle = React.forwardRef((props, ref) => {
   return (
     <div>
       <div style={hidden}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+        <button onClick={toggleVisibility} >{props.buttonLabel}</button>
       </div>
       <div style={shown}>
         {props.children}
