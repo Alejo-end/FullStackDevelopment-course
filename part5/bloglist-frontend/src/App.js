@@ -14,9 +14,9 @@ function App() {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
-  const [color, setColor] = useState(null)
+  const [user, setUser] = useState('')
+  const [message, setMessage] = useState('')
+  const [color, setColor] = useState('')
 
   useEffect(() => {
     blogService.getAllBlogs().then(data => {
@@ -79,7 +79,7 @@ function App() {
 
   const handleLogout = () => {
     window.localStorage.clear()
-    setUser(null)
+    setUser('')
   }
 
   const addBlog = async (event) => {
@@ -113,14 +113,16 @@ function App() {
 
   return (
     <>
-      {user === null ?
+      {user === '' ?
         <>
           <h1>Login to App</h1>
-          <Alert message={message} color={color} />
-          <AuthForm submitFunc={handleLogin} username={username} password={password} usernameFunc={handleNameChange} passwordFunc={handlePasswordChange} buttonDesc="Login" /></> :
+          <Alert text={message} color={color} />
+          <AuthForm submitFunc={handleLogin} username={username} password={password} usernameFunc={handleNameChange} passwordFunc={handlePasswordChange} buttonDesc="Login" />
+        </>
+        :
         <>
           <h2>Blogs</h2>
-          <Alert message={message} />
+          <Alert text={message} color={color}  />
           <p> {user.name} logged in <button onClick={handleLogout}>logout</button> </p>
           <h2>Create new blog</h2>
           <CreateBlogForm submitFunc={addBlog} inputTitleValue={title} inputTitleChangeFunc={handleTitleChange} inputAuthorValue={author} inputAuthorChangeFunc={handleAuthorChange} inputUrlValue={url} inputUrlChangeFunc={handleUrlChange} />
